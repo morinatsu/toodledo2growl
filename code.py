@@ -5,7 +5,7 @@ toodledo2grwol : Display grwol notify tasks of Toodledo
 
 """
 from datetime import datetime
-from apiclient import ApiClient
+from poodledo.apiclient import ApiClient
 import gntp.notifier
 
 # Task Filters
@@ -43,10 +43,10 @@ def _taskFilter(tasks):
         yield task
 
 # create Toodledo Client
-api = ApiClient(app_id = "zzzzzzzzzzzzzz", app_token="yyyyyyyyyyyyyyyy")
+api = ApiClient(app_id = "toodledo2growl", app_token="api4e7425e2854a8")
 
 # Toodledo Authentication
-api.authenticate('xxxxxxxxxxxxxxxxxxx', 'wwwwwwwww')
+api.authenticate('morinatsu@gmail.com', 'uthena')
 
 # Get Task list from Toodledo
 task_list = api.getTasks(fields="duedate")
@@ -66,7 +66,7 @@ for hot_task in _taskFilter(task_list):
         noteType = "Task",
         title = hot_task.title,
         description = duedate.strftime("DueDate: %Y/%m/%d"),
-        icon = "file:///C:/Users/vvvvv/vvvvvvvvv/vvvvvvvvvvvvvv/vvvvvvvvv.png",
+        icon = "file:///C:/Users/nmori/Documents/toodledo2growl/cafepress.png",
         sticky = False,
         priority = 1,
     )

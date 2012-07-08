@@ -1,0 +1,3 @@
+[submodule "poodledo"]
+	path = poodledo
+	url = git://github.com/handyman5/poodledo.git
