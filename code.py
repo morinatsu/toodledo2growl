@@ -23,11 +23,13 @@ def _taskFilter(tasks):
             logging.debug(': '.join(['not completed', task.title]))
             return True
         else:
-            if task.completed == "0":
-                logging.debug(': '.join(['not completed', task.title]))
+            if task.completed == 0:
+                logging.debug(': '.join(['not completed', task.title,
+                    str(task.completed)]))
                 return True
             else:
-                logging.debug(': '.join(['completed', task.title]))
+                logging.debug(': '.join(['completed', task.title,
+                    str(task.completed)]))
                 return False
 
     def _hasDuedate(task):
@@ -35,7 +37,7 @@ def _taskFilter(tasks):
          Task Has Duedate
         """
         if hasattr(task, "duedate") == True:
-            if task.duedate != "0":
+            if task.duedate != 0:
                 logging.debug(': '.join(['has duedate', task.title]))
                 return True
             else:
@@ -48,6 +50,9 @@ def _taskFilter(tasks):
     for task in [ task for task in tasks if (_isUncompleted(task) == True) and \
                                             (_hasDuedate(task) == True)]:
         yield task
+
+# config logging
+logging.basicConfig(level=logging.DEBUG)
 
 # create Toodledo Client
 api = ApiClient(app_id = "toodledo2growl", app_token="api4e7425e2854a8")
