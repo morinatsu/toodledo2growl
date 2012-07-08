@@ -5,9 +5,10 @@ toodledo2grwol : Display grwol notify tasks of Toodledo
 
 """
 from datetime import datetime
+import logging
+import argparse
 from poodledo.apiclient import ApiClient
 import gntp.notifier
-import logging
 
 # Task Filters
 def _taskFilter(tasks):
@@ -51,8 +52,19 @@ def _taskFilter(tasks):
                                             (_hasDuedate(task) == True)]:
         yield task
 
+#parse arguments
+loglevel='WARNING'
+parser = argparse.ArgumentParser(
+    description='Notify toodledo tasks with Growl for windows.')
+parser.add_argument('--log', dest='loglevel', default='WARNING',
+    help='level of logging (default: WARNING)')
+args = parser.parse_args()
+
 # config logging
-logging.basicConfig(level=logging.DEBUG)
+numeric_level = getattr(logging, args.loglevel.upper(), None)
+if not isinstance(numeric_level, int):
+    raise ValueError('Invalid log level: %s' % loglevel)
+logging.basicConfig(level=numeric_level)
 
 # create Toodledo Client
 api = ApiClient(app_id = "toodledo2growl", app_token="api4e7425e2854a8")
