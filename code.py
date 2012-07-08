@@ -7,6 +7,7 @@ toodledo2grwol : Display grwol notify tasks of Toodledo
 from datetime import datetime
 from poodledo.apiclient import ApiClient
 import gntp.notifier
+import sys
 
 # Task Filters
 def _taskFilter(tasks):
@@ -44,12 +45,15 @@ def _taskFilter(tasks):
 
 # create Toodledo Client
 api = ApiClient(app_id = "toodledo2growl", app_token="api4e7425e2854a8")
+sys.stdout.write('created Toodledo Client')
 
 # Toodledo Authentication
 api.authenticate('morinatsu@gmail.com', 'uthena')
+sys.stdout.write('Auth Toodledo')
 
 # Get Task list from Toodledo
 task_list = api.getTasks(fields="duedate")
+sys.stdout.write(': '.join(['Got task list', str(len(task_list))]))
 
 # Register to Growl
 growl = gntp.notifier.GrowlNotifier(
@@ -58,6 +62,7 @@ growl = gntp.notifier.GrowlNotifier(
     defaultNotifications = ["Task"],
 )
 growl.register()
+sys.stdout.write('Register growl')
 
 # Send Notify to Growl
 for hot_task in _taskFilter(task_list):
@@ -70,5 +75,7 @@ for hot_task in _taskFilter(task_list):
         sticky = False,
         priority = 1,
     )
+    sys.stdout.write('notify sended')
 # end
+sys.stdout.write('end')
 
