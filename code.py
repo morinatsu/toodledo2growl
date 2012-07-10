@@ -54,7 +54,7 @@ def _taskFilter(tasks):
         yield task
 
 #parse arguments
-loglevel='WARNING'
+loglevel = 'WARNING'
 parser = argparse.ArgumentParser(
     description='Notify toodledo tasks with Growl for windows.')
 parser.add_argument('--log', dest='loglevel', default='WARNING',
@@ -72,7 +72,11 @@ if not isinstance(numeric_level, int):
 logging.basicConfig(level=numeric_level)
 
 # create Toodledo Client
-api = ApiClient(app_id = "toodledo2growl", app_token="api4e7425e2854a8")
+app_id = config.get('credential', 'app_id')
+app_token = config.get('credential', 'app_token')
+logging.debug(': '.join(['Client app_id', app_id]))
+logging.debug(': '.join(['Client app_token', app_token]))
+api = ApiClient(app_id=app_id, app_token=app_token)
 logging.info('created Toodledo Client')
 
 # Toodledo Authentication
