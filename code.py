@@ -7,6 +7,7 @@ toodledo2grwol : Display grwol notify tasks of Toodledo
 from datetime import datetime
 import logging
 import argparse
+import ConfigParser
 from poodledo.apiclient import ApiClient
 import gntp.notifier
 
@@ -60,6 +61,10 @@ parser.add_argument('--log', dest='loglevel', default='WARNING',
     help='level of logging (default: WARNING)')
 args = parser.parse_args()
 
+#parse config
+config = ConfigParser.SafeConfigParser()
+config.read(['toodledo2growl.cnf'])
+
 # config logging
 numeric_level = getattr(logging, args.loglevel.upper(), None)
 if not isinstance(numeric_level, int):
@@ -71,7 +76,11 @@ api = ApiClient(app_id = "toodledo2growl", app_token="api4e7425e2854a8")
 logging.info('created Toodledo Client')
 
 # Toodledo Authentication
-api.authenticate('morinatsu@gmail.com', 'uthena')
+email = config.get('credential', 'email')
+password = config.get('credential', 'password')
+logging.debug(': '.join(['Auth email', email]))
+logging.debug(': '.join(['Auth password', password]))
+api.authenticate(email, password)
 logging.info('Auth Toodledo')
 
 # Get Task list from Toodledo
