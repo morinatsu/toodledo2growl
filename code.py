@@ -101,13 +101,14 @@ growl.register()
 logging.info('Register growl')
 
 # Send Notify to Growl
+notify_icon = config.get('icon', 'notify')
 for hot_task in _taskFilter(task_list):
     duedate = datetime.fromtimestamp(float(hot_task.duedate))
     growl.notify(
         noteType = "Task",
         title = hot_task.title,
         description = duedate.strftime("DueDate: %Y/%m/%d"),
-        icon = open('cafepress.png', 'rb').read(),
+        icon = open(notify_icon, 'rb').read(),
         sticky = False,
         priority = 1,
     )

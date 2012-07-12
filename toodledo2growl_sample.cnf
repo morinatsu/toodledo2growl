@@ -3,3 +3,6 @@ email: xxxxxxxx@xxxxxx.xxxx
 password: xxxxxxxx
 app_id: xxxxx
 app_token: xxxxxxxxxx
+
+[icon]
+notify: xxxxxxxx.png
