@@ -107,7 +107,7 @@ for hot_task in _taskFilter(task_list):
         noteType = "Task",
         title = hot_task.title,
         description = duedate.strftime("DueDate: %Y/%m/%d"),
-        icon = "file:///C:/Users/nmori/Documents/toodledo2growl/cafepress.png",
+        icon = open('cafepress.png', 'rb').read(),
         sticky = False,
         priority = 1,
     )
