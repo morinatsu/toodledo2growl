@@ -141,11 +141,16 @@ logging.info('Register growl')
 # Send Notify to Growl
 notify_icon = config.get('icon', 'notify')
 for hot_task in _HotlistFilter(account_info, task_list):
-    duedate = datetime.fromtimestamp(float(hot_task.duedate))
+    if not hasattr(hot_task, "duedate"):
+        duedate = ""
+    elif hot_task.duedate == 0:
+        duedate = ""
+    else:
+        duedate = datetime.fromtimestamp(float(hot_task.duedate)).strftime("DueDate: %Y/%m/%d")
     growl.notify(
         noteType="Task",
         title=hot_task.title,
-        description=duedate.strftime("DueDate: %Y/%m/%d"),
+        description=duedate,
         icon=open(notify_icon, 'rb').read(),
         sticky=False,
         priority=1,
