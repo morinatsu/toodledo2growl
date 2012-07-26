@@ -9,7 +9,6 @@ import logging
 import argparse
 import ConfigParser
 from poodledo.apiclient import ApiClient
-import gntp.notifier
 
 
 class HotList(object):
@@ -17,7 +16,7 @@ class HotList(object):
     HotList of Toodledo
     """
 
-    def _HotlistFilter(account_info, tasks):
+    def _HotlistFilter(self, account_info, tasks):
         """
          Hotlist Filter -- return tasks in Hotlist
         """
@@ -33,7 +32,7 @@ class HotList(object):
             else:
                 if task.priority < account_info.hotlistpriority:
                     logging.debug(': '.join(['less priority', task.title,
-                        str(task.priority)]))
+                                             str(task.priority)]))
                     return False
 
             # duedate
@@ -45,7 +44,7 @@ class HotList(object):
                     timedelta(account_info.hotlistduedate)
                 if today < from_date:
                     logging.debug(': '.join(['duedate is far', task.title,
-                        str(task.duedate)]))
+                                             str(task.duedate)]))
                     return False
 
             # star
@@ -54,8 +53,8 @@ class HotList(object):
             else:
                 if account_info.hotliststar == '1':
                     if task.star != '1':
-                        logging.debug(': '.join(['not starred', tasl.title,
-                            task.star, account_info.hotliststar]))
+                        logging.debug(': '.join(['not starred', task.title,
+                                      task.star, account_info.hotliststar]))
                         return False
 
             # status
@@ -64,8 +63,9 @@ class HotList(object):
             else:
                 if account_info.hotliststatus == '1':
                     if task.status != '1':
-                        logging.debug(': '.join(['is not Next Action', task.title,
-                            task.status, account_info.hotliststatus]))
+                        logging.debug(': '.join(['is not Next Action',
+                                      task.title, task.status,
+                                      account_info.hotliststatus]))
                         return False
 
             logging.debug(' '.join([task.title, 'is in Hotlist.']))
@@ -81,14 +81,15 @@ class HotList(object):
             else:
                 if task.completed == 0:
                     logging.debug(': '.join(['not completed', task.title,
-                        str(task.completed)]))
+                                  str(task.completed)]))
                     return True
                 else:
                     logging.debug(': '.join(['completed', task.title,
-                        str(task.completed)]))
+                                  str(task.completed)]))
                     return False
 
-        for task in [task for task in tasks if (_isHot(task) and _isUncompleted(task))]:
+        for task in [task for task in tasks if (_isHot(task) and
+                                                _isUncompleted(task))]:
             yield task
 
     def retrieve(self):
@@ -101,7 +102,7 @@ class HotList(object):
         parser = argparse.ArgumentParser(
             description='Notify toodledo tasks with Growl for windows.')
         parser.add_argument('--log', dest='loglevel', default='WARNING',
-            help='level of logging (default: WARNING)')
+                            help='level of logging (default: WARNING)')
         args = parser.parse_args()
 
         #parse config
@@ -137,6 +138,10 @@ class HotList(object):
         # Get Task list from Toodledo
         task_list = api.getTasks(fields="duedate,star,priority")
         logging.info(': '.join(['Got task list', str(len(task_list))]))
+
+        for task in self._HotlistFilter(account_info, task_list):
+            yield task
+
 
 if __name__ == "__main__":
     hotlist = HotList()
