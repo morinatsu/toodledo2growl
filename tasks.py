@@ -4,6 +4,7 @@
 toodledo2grwol.tasks : retrieve tasks of Toodledo
 
 """
+import os.path
 from datetime import datetime, timedelta
 import logging
 import argparse
@@ -106,8 +107,10 @@ class HotList(object):
         args = parser.parse_args()
 
         #parse config
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        config_file = os.path.join(current_dir, 'toodledo2growl.cnf')
         config = ConfigParser.SafeConfigParser()
-        config.read(['toodledo2growl.cnf'])
+        config.read([config_file])
 
         # config logging
         numeric_level = getattr(logging, args.loglevel.upper(), None)

@@ -4,6 +4,7 @@
 toodledo2grwol : Display grwol notify tasks of Toodledo
 
 """
+import os.path
 from datetime import datetime
 import logging
 import ConfigParser
@@ -12,8 +13,10 @@ from tasks import HotList
 
 
 #parse config
+current_dir = os.path.dirname(os.path.abspath(__file__))
+config_file = os.path.join(current_dir, 'toodledo2growl.cnf')
 config = ConfigParser.SafeConfigParser()
-config.read(['toodledo2growl.cnf'])
+config.read([config_file])
 
 
 # Register to Growl
@@ -26,7 +29,7 @@ growl.register()
 logging.info('Register growl')
 
 # Send Notify to Growl
-notify_icon = config.get('icon', 'notify')
+notify_icon = os.path.join(current_dir, config.get('icon', 'notify'))
 hotlist = HotList()
 for hot_task in hotlist.retrieve():
     if not hasattr(hot_task, "duedate"):
