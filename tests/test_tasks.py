@@ -8,22 +8,9 @@ import os
 import sys
 import unittest
 from mock import MagicMock, patch
-from poodledo import apiclient
 
 sys.path.insert(0, os.path.abspath('../'))
-
-
-def _dummy_config_get(section, item):
-    if (section == 'credential') and (item == 'app_id'):
-        return 'testoftasks'
-    elif (section == 'credential') and (item == 'app_token'):
-        return 'apptokenfortasks'
-    elif (section == 'credential') and (item == 'email'):
-        return 'emailfortasks'
-    elif (section == 'credential') and (item == 'password'):
-        return 'passwordfortasks'
-    else:
-        pass
+import tasks
 
 
 class TestHotList(unittest.TestCase):
@@ -37,14 +24,20 @@ class TestHotList(unittest.TestCase):
 
 class TestRetrieveNormal(TestHotList):
     """ normal retrieve() """
-    @patch('poodledo.apiclient.ApiClient')
-    def test_retrieve_one(self, apic):
-        apic.return_value = MagicMock(name='ApiClient',
-                spec=apiclient.ApiClient)
-        apic.return_value.authenticate = MagicMock(name='authenticate')
-        apic.return_value.getAccountInfo = MagicMock(name='getAccountInfo')
-        del apic.return_value.getAccountInfo.return_value.hotlistduedate
-        apic.return_value.getTasks = MagicMock(name='getTasks')
+    def setUp(self):
+        self.patcher = patch('tasks.ApiClient')
+        self.apic = self.patcher.start()
+        self.apic.return_value = MagicMock(name='ApiClient',
+                spec=tasks.ApiClient)
+        self.apic.return_value.authenticate = MagicMock(name='authenticate')
+        self.apic.return_value.getAccountInfo = MagicMock(name='getAccountInfo')
+        del self.apic.return_value.getAccountInfo.return_value.hotlistduedate
+        self.apic.return_value.getTasks = MagicMock(name='getTasks')
+
+    def tearDown(self):
+        self.patcher.stop()
+
+    def test_retrieve_one(self):
         mock_task = MagicMock(name='mocked_task')
         attr = {'duedate': None,
                 'star': None,
@@ -54,17 +47,40 @@ class TestRetrieveNormal(TestHotList):
                }
         mock_task.configure_mock(**attr)
         del mock_task.completed
-        apic.return_value.getTasks.return_value = [mock_task, ]
-        import tasks
+        self.apic.return_value.getTasks.return_value = [mock_task, ]
         hotlist = tasks.HotList()
         result = list(hotlist.retrieve())
         self.assertEqual(result, [mock_task])
 
     def test_retrieve_multi(self):
-        pass
+        mock_task_1st = MagicMock(name='mocked_task_1st')
+        attr_1st = {'duedate': None,
+                    'star': None,
+                    'priority': 5,
+                    'status': 1,
+                    'title': 'retrieve one'
+                   }
+        mock_task_1st.configure_mock(**attr_1st)
+        del mock_task_1st.completed
+        mock_task_2nd = MagicMock(name='mocked_task_2nd')
+        attr_2nd = {'duedate': None,
+                    'star': None,
+                    'priority': 5,
+                    'status': 1,
+                    'title': 'retrieve two'
+                   }
+        mock_task_2nd.configure_mock(**attr_2nd)
+        del mock_task_2nd.completed
+        self.apic.return_value.getTasks.return_value = [mock_task_1st, mock_task_2nd]
+        hotlist = tasks.HotList()
+        result = list(hotlist.retrieve())
+        self.assertEqual(result, [mock_task_1st, mock_task_2nd])
 
     def test_retrieve_empty(self):
-        pass
+        self.apic.return_value.getTasks.return_value = []
+        hotlist = tasks.HotList()
+        result = list(hotlist.retrieve())
+        self.assertEqual(result, [])
 
 
 class TestRetrieveError(TestHotList):
