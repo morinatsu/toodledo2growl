@@ -85,8 +85,24 @@ class TestRetrieveNormal(TestHotList):
 
 class TestRetrieveError(TestHotList):
     """ retrieve() error """
+    def setUp(self):
+        self.patcher = patch('tasks.ApiClient')
+        self.apic = self.patcher.start()
+        self.apic.return_value = MagicMock(name='ApiClient',
+                spec=tasks.ApiClient)
+        self.apic.return_value.authenticate = MagicMock(name='authenticate')
+        self.apic.return_value.getAccountInfo = MagicMock(name='getAccountInfo')
+        del self.apic.return_value.getAccountInfo.return_value.hotlistduedate
+        self.apic.return_value.getTasks = MagicMock(name='getTasks')
+
+    def tearDown(self):
+        self.patcher.stop()
+
     def test_retrieve_error(self):
-        pass
+        self.apic.return_value.getTasks.side_effect = Exception('error on server')
+        hotlist = tasks.HotList()
+        with self.assertRaisesRegexp(Exception, r'error on server'):
+            result = list(hotlist.retrieve())
 
 
 class TestIsHot(TestHotList):
