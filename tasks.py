@@ -65,7 +65,7 @@ class HotList(object):
                 if account_info.hotliststatus == '1':
                     if task.status != '1':
                         logging.debug(': '.join(['is not Next Action',
-                                      task.title, task.status,
+                                      task.title, unicode(task.status),
                                       account_info.hotliststatus]))
                         return False
 
