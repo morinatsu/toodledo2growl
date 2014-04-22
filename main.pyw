@@ -7,20 +7,12 @@ toodledo2grwol : Display grwol notify tasks of Toodledo
 import os.path
 from datetime import datetime
 import logging
-import logging.handlers
 import ConfigParser
 import gntp.notifier
 from tasks import HotList
 
 
-# Setup logger
-logger = logging.getLogger('toodledo2growl')
-logger.setLevel(logging.INFO)
-handler = logging.handlers.NTEventLogHandler('toodledo2growl')
-handler.setLevel(logging.INFO)
-logger.addHandler(handler)
-
-# Parse config
+# parse config
 current_dir = os.path.dirname(os.path.abspath(__file__))
 config_file = os.path.join(current_dir, 'toodledo2growl.cnf')
 config = ConfigParser.SafeConfigParser()
@@ -34,7 +26,7 @@ growl = gntp.notifier.GrowlNotifier(
     defaultNotifications=["Task"],
 )
 growl.register()
-logger.info('Register growl')
+logging.info('Register growl')
 
 # Send Notify to Growl
 notify_icon = os.path.join(current_dir, config.get('icon', 'notify'))
@@ -55,6 +47,6 @@ for hot_task in hotlist.retrieve():
         sticky=False,
         priority=1,
     )
-    logger.debug(': '.join(['notify sended', hot_task.title]))
+    logging.info(': '.join(['notify sended', hot_task.title]))
 # end
-logger.info('end')
+logging.info('end')
